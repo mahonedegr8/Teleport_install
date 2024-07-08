@@ -1,0 +1,65 @@
+Adding Nodes (Adding New Servers) [NO SSL INSTALLED]
+To add additional nodes to your Teleport cluster:
+
+Install Teleport on the new node. [Make sure Teleport on the node is of the same version as auth-server]
+If versions are different, upgrade; Check out upgrade instructions...
+
+
+****ON MAIN TELEPORT SERVER***
+STEP 1: LOCATE TELEPORT UNIT (teleport.service):
+systemctl status teleport 
+
+STEP 2: EDIT THE TELEPORT UNIT FILE:
+sudo nano /usr/lib/systemd/system/teleport.service
+
+STEP 3: MODIFY THE "ExactStart" LINE:
+ExecStart=/usr/local/bin/teleport start --config /etc/teleport.yaml --pid-file /run/teleport.pid --insecure
+
+STEP 4: RELOAD SYSTEMD AND RESTART TELEPORT:
+sudo systemctl daemon-reload
+sudo systemctl restart teleport
+
+STEP 5: ACQUIRE TOKEN:
+sudo tctl nodes add --ttl=1h --roles=node
+
+***ON THE NODE***
+STEP 1: CONFIGURE TELEPORT:
+sudo nano /etc/teleport.yaml
+
+# Copy and paste below text in config file (Save and Exit)
+#
+# A Sample Teleport configuration file.
+#
+# Things to update:
+#  1. license.pem: Retrieve a license from your Teleport account https://teleport.sh
+#     if you are an Enterprise customer.
+#
+version: v3
+teleport:
+  nodename: phil		# Name of you node
+  auth_token: "4d154f5050f715d48c919cb609c708eb"	# Token acquired from teleport server
+  auth_server: telsecure.uk.to:3080		# url to teleport server
+
+auth_service:
+  enabled: no
+
+ssh_service:
+  enabled: yes
+  labels:
+    role: "node"
+
+proxy_service:
+  enabled: no
+
+STEP 2: CONNECT TO TELEPORT SERVER:
+Copy the text from the Teleport Server, Paste it in the node server: 
+
+teleport start \
+   --roles=node \
+   --token=4d154f5050f715d48c919cb609c708eb \
+   --ca-pin=sha256:02e47e5c5cf2bc52fc23f4019c45d6495c93b2da4872306e3921e8977427fb65 \
+   --auth-server=172.16.130.14:3025
+
+STEP 3: FIREWALL CONFIGURATION:
+If ufw is enabled on the node server, allow port 3022 through.
+ufw allow 3022

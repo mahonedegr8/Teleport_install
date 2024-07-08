@@ -1,0 +1,17 @@
+STEPS TO UPGRADE TELEPORT
+Step 1: Backup Config file (If any) /etc/teleport.yaml:
+Step 2: DOWNLOAD TELEPORT VERSION REQUIRED (v16.0.0):
+wget https://get.gravitational.com/teleport-v16.0.0-linux-amd64-bin.tar.gz
+
+Step 3: STOP TELEPORT SERVICE:
+sudo systemctl stop teleport
+
+Step 4: INSTALL TELEPORT:
+tar -xzf teleport-v16.0.0-linux-amd64-bin.tar.gz
+sudo mv teleport/tctl teleport/tsh teleport/teleport /usr/local/bin/
+
+Step 5: Update Configuration if Required:
+sudo nano /etc/teleport.yaml
+
+Step 6: Check Teleport Version:
+teleport version

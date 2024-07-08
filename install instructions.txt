@@ -1,0 +1,67 @@
+Add the Teleport GPG key:
+$ curl https://deb.releases.teleport.dev/teleport-pubkey.asc | sudo apt-key add -
+
+Add the Teleport repository:
+$ sudo add-apt-repository 'deb https://deb.releases.teleport.dev/ stable main'
+sudo apt-get update
+
+Install Teleport:
+$ sudo apt-get install teleport
+
+Generate a configuration file:
+$ teleport configure --acme --acme-email=elibrary.cu@gmail.com --cluster-name=telsecure.uk.to
+sudo tee /etc/teleport.yaml > /dev/null
+
+Edit the configuration file:
+$ sudo nano /etc/teleport.yaml
+
+Update the configuration with the following basic settings:
+
+#
+# A Sample Teleport configuration file.
+#
+# Things to update:
+#  1. license.pem: Retrieve a license from your Teleport account https://te>#     if you are an Enterprise customer.
+#
+version: v3
+teleport:
+  nodename: phil
+  data_dir: /var/lib/teleport
+  log:
+    output: stderr
+    severity: INFO
+    format:
+      output: text
+  ca_pin: ""
+  diag_addr: ""
+auth_service:
+  enabled: "yes"
+  listen_addr: 0.0.0.0:3025
+  proxy_listener_mode: multiplex
+ssh_service:
+  enabled: "yes"
+proxy_service:
+  enabled: "yes"
+  listen_addr: 0.0.0.0:3023
+  web_listen_addr: 0.0.0.0:3080
+  tunnel_listen_addr: 0.0.0.0:3024
+  https_keypairs: []
+  https_keypairs_reload_interval: 0s
+  acme: {}
+
+
+Start Teleport:
+$ sudo systemctl start teleport
+
+Enable Teleport to start on boot:
+$ sudo systemctl enable teleport
+
+
+Access the Teleport Web Interface:
+https://<your-server-ip>:3080
+
+
+TO CREATE A USER:
+$ sudo tctl users add teleport_admin --roles auditor,editor,access --logins root,vagrant,db_admin	(For full root access to a server through ssh)
+Follow the link provided to setup a password.
+
